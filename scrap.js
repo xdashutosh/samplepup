@@ -2,6 +2,7 @@ import puppeteer from "puppeteer";
 
 export const scrap = async (req, res) => {
   try {
+    const {word,datapage}=req.body;  
     // Launch Puppeteer
     const browser = await puppeteer.launch({
       headless: true, // Run in headless mode
@@ -11,9 +12,10 @@ export const scrap = async (req, res) => {
 
     const page = await browser.newPage();
 
-    await page.goto(`https://hqporn.xxx/search/hardcore/2/`, {
+    await page.goto(`https://hqporn.xxx/search/${word}/${datapage}/`, {
         waitUntil: "domcontentloaded", // Wait until the DOM is fully loaded
       });
+    
     
       // Wait for a specific element containing dynamic content
       await page.waitForSelector('.js-gallery-link'); // Adjust to a meaningful selector like IMDb's titles
@@ -59,6 +61,7 @@ export const scrap = async (req, res) => {
 
     // Send the result as a JSON response
     res.json({ combinedArray });
+    
   } catch (error) {
     console.error("Scraping failed:", error.message);
     res.status(500).json({ error: error.message });
