@@ -11,26 +11,54 @@ export const scrap = async (req, res) => {
 
     const page = await browser.newPage();
 
-    // Go to Hacker News
-    await page.goto("https://www.cssinfotech.in/", {
-      waitUntil: "domcontentloaded", // Wait until the DOM is fully loaded
-    });
-
-    // Wait for the title links to appear
-    await page.waitForSelector("h1");
-
-    // Extract titles and links
-    const articles = await page.evaluate(() => {
-      return Array.from(document.querySelectorAll("h1")).map((el) => ({
-        title: el.innerText,
+    await page.goto(`https://hqporn.xxx/search/hardcore/2/`, {
+        waitUntil: "domcontentloaded", // Wait until the DOM is fully loaded
+      });
+    
+      // Wait for a specific element containing dynamic content
+      await page.waitForSelector('.js-gallery-link'); // Adjust to a meaningful selector like IMDb's titles
+      await page.waitForSelector('.js-gallery-img img'); 
+      await page.waitForSelector('.b-thumb-item__duration span'); // Adjust to a meaningful selector like IMDb's titles
+      
+      
+    
+      // Extract data
+      const data1 = await page.evaluate(() => {
+        // Extract specific data such as titles or other information
+        return Array.from(document.querySelectorAll('.js-gallery-img img')).map((el) => el.src);
+      });
+      const videotit = await page.evaluate(() => {
+        // Extract specific data such as titles or other information
+        return Array.from(document.querySelectorAll('.js-gallery-img img')).map((el) => el.alt);
+      });
+      const duration = await page.evaluate(() => {
+        // Extract specific data such as titles or other information
+        return Array.from(document.querySelectorAll('.b-thumb-item__duration span')).map((el) => el.innerText);
+      });
+    
+     
+      const data = await page.evaluate(() => {
+        // Extract specific data such as titles or other information
+        return Array.from(document.querySelectorAll('.js-gallery-link')).map((el) => el.href);
+      });
+    
+      const preview = await page.evaluate(() => {
+        // Extract specific data such as titles or other information
+        return Array.from(document.querySelectorAll('.js-gallery-link')).map((el) => el.getAttribute('data-preview'));
+      });
+     
+      const combinedArray = data1.map((title, index) => ({
+        title:videotit[index],
+        imgsrc: title,
+        siteurl: data[index],
+        duration:duration[index],
+        preview:preview[index]
       }));
-    });
 
-    // Close the browser
     await browser.close();
 
     // Send the result as a JSON response
-    res.json({ articles });
+    res.json({ combinedArray });
   } catch (error) {
     console.error("Scraping failed:", error.message);
     res.status(500).json({ error: error.message });
