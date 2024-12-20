@@ -12,18 +12,17 @@ export const scrap = async (req, res) => {
     const page = await browser.newPage();
 
     // Go to Hacker News
-    await page.goto("https://news.ycombinator.com", {
+    await page.goto("https://www.cssinfotech.in/", {
       waitUntil: "domcontentloaded", // Wait until the DOM is fully loaded
     });
 
     // Wait for the title links to appear
-    await page.waitForSelector(".titlelink");
+    await page.waitForSelector("h1");
 
     // Extract titles and links
     const articles = await page.evaluate(() => {
-      return Array.from(document.querySelectorAll(".titlelink")).map((el) => ({
+      return Array.from(document.querySelectorAll("h1")).map((el) => ({
         title: el.innerText,
-        link: el.href,
       }));
     });
 
